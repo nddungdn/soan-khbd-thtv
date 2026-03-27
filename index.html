@@ -1,249 +1,225 @@
-<div id="lesson-planner-wrapper">
+<div id="ai-lesson-planner-wrapper">
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap');
     
-    /* BẢNG MÀU XANH DƯƠNG ĐẬM - VIỀN VÀNG */
-    :root { 
-      --bg-dark: #001224; 
-      --bg-gradient: radial-gradient(circle at center, #002b5e 0%, #001224 100%);
-      --bg-card: rgba(0, 43, 94, 0.65); 
+    /* TOÀN BỘ CSS ĐƯỢC CÁCH LY BẰNG TIỀN TỐ .ai-lp- ĐỂ TRÁNH XUNG ĐỘT BLOGGER */
+    #ai-lesson-planner-wrapper {
+      --bg-dark: #003f88; 
+      --bg-header: #003572;
       --border-color: #ffd700; 
-      --border-dim: rgba(255, 215, 0, 0.3); 
-      --glow-effect: 0 0 10px rgba(255, 215, 0, 0.4), inset 0 0 10px rgba(255, 215, 0, 0.1);
-      
       --text-primary: #ffffff; 
       --text-secondary: #cccccc; 
-      
+      --text-muted: #b0c4de; 
       --accent-primary: #ffd700; 
-      --accent-hover: #ffea00; 
       
-      --user-msg: rgba(255, 215, 0, 0.15); 
-      --ai-msg: rgba(0, 43, 94, 0.8); 
-      --success: #ffd700; 
-      --error: #ff3366;
-    }
-
-    #lesson-planner-wrapper {
-      background: var(--bg-gradient);
+      background-color: var(--bg-dark);
       color: var(--text-primary);
       font-family: 'Be Vietnam Pro', sans-serif;
       box-sizing: border-box; 
-      height: 100vh; 
+      width: 100%;
+      height: 90vh; 
+      min-height: 750px;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      margin: 10px 0;
       display: flex; 
       flex-direction: column;
+      overflow: hidden;
+      position: relative;
+    }
+
+    #ai-lesson-planner-wrapper:fullscreen {
+      height: 100vh;
+      max-height: 100vh;
+      border-radius: 0;
+      border: none;
+      margin: 0;
     }
     
-    #lesson-planner-wrapper *, #lesson-planner-wrapper *:before, #lesson-planner-wrapper *:after {
+    #ai-lesson-planner-wrapper *, #ai-lesson-planner-wrapper *:before, #ai-lesson-planner-wrapper *:after {
       box-sizing: inherit;
     }
     
-    .header { 
-      position: relative;
-      padding: 1.5rem; 
+    .ai-lp-header { 
+      padding: 25px 20px; 
       text-align: center; 
-      border-bottom: 1px solid var(--border-color); 
-      flex-shrink: 0;
-      box-shadow: 0 4px 15px rgba(255, 215, 0, 0.15);
-      background-color: rgba(0, 18, 36, 0.8);
-      backdrop-filter: blur(5px);
+      border-bottom: 2px solid var(--border-color); 
+      background-color: var(--bg-header);
+      flex-shrink: 0; 
+      width: 100%;
+      display: flex; 
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      z-index: 10;
     }
     
-    .header h1 { 
+    .ai-lp-header h1 { 
       color: var(--accent-primary); 
-      text-shadow: 0 0 10px rgba(255, 215, 0, 0.8); 
-      letter-spacing: 1px;
-      margin: 0 0 0.5rem 0;
-      font-size: 1.75rem; 
+      font-size: 1.5rem; 
       font-weight: 700;
+      text-transform: uppercase;
+      margin: 0 0 10px 0;
+      line-height: 1.2;
     }
 
-    .fullscreen-btn {
-      position: absolute;
-      right: 1.5rem;
-      top: 50%;
-      transform: translateY(-50%);
-      background-color: rgba(255, 215, 0, 0.1);
+    .ai-lp-header .ai-lp-subtitle {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin: 0 0 8px 0;
+      line-height: 1.5;
+      max-width: 850px;
+    }
+
+    .ai-lp-header .ai-lp-features-note {
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+      margin: 0 0 15px 0;
+      font-style: italic;
+    }
+
+    .ai-lp-fullscreen-btn {
+      background-color: transparent;
       color: var(--accent-primary);
-      border: 1px solid var(--border-dim);
-      padding: 8px 12px;
+      border: 1px solid var(--accent-primary);
+      padding: 8px 20px;
       border-radius: 4px;
       cursor: pointer;
-      transition: all 0.3s;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 0.75rem;
+      font-size: 0.8rem;
       text-transform: uppercase;
       font-weight: 600;
-    }
-    .fullscreen-btn:hover {
-      background-color: var(--accent-primary);
-      color: #000;
-      box-shadow: 0 0 10px var(--accent-primary);
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin: 0 auto;
     }
     
-    .main-container { display: flex; flex: 1; overflow: hidden; max-width: 95rem; margin: 0 auto; width: 100%; }
+    .ai-lp-main-container { 
+      display: flex; 
+      flex: 1; 
+      overflow: hidden; 
+      width: 100%; 
+      background-color: var(--bg-dark);
+      position: relative;
+      z-index: 1;
+    }
     
-    .config-panel { 
-      width: 400px; 
-      background-color: var(--bg-card); 
+    .ai-lp-config-panel { 
+      width: 360px; 
+      background-color: rgba(0, 0, 0, 0.2); 
       border-right: 1px solid var(--border-color); 
-      box-shadow: var(--glow-effect);
-      display: flex; flex-direction: column; overflow-y: auto; padding: 1.5rem; flex-shrink: 0;
-      backdrop-filter: blur(10px);
+      display: flex; 
+      flex-direction: column; 
+      overflow-y: auto; 
+      padding: 20px; 
+      flex-shrink: 0;
     }
-    .config-panel h2 { font-size: 1.125rem; font-weight: 600; margin-bottom: 1.5rem; color: var(--accent-primary); text-transform: uppercase; letter-spacing: 1px;}
-    .input-group { margin-bottom: 1.25rem; }
+
+    .ai-lp-chat-panel { 
+      flex: 1; 
+      display: flex; 
+      flex-direction: column; 
+      background-color: transparent;
+      min-width: 0;
+    }
+
+    .ai-lp-config-panel h2 { font-size: 1rem; margin: 0 0 20px 0; color: var(--accent-primary); text-transform: uppercase; border-left: 4px solid var(--accent-primary); padding-left: 12px; }
+    .ai-lp-input-group { margin-bottom: 20px; }
     
-    .label-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
-    .label-header label { font-size: 0.875rem; color: var(--text-secondary); font-weight: 600; margin: 0; text-transform: uppercase; letter-spacing: 0.5px;}
+    .ai-lp-label-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    .ai-lp-label-header label { font-size: 0.8rem; color: var(--text-secondary); font-weight: 600; margin: 0; text-transform: uppercase;}
     
-    .upload-btn { 
-      display: inline-flex; align-items: center; gap: 4px; font-size: 0.75rem; 
+    .ai-lp-upload-btn { 
+      display: inline-flex; align-items: center; gap: 4px; font-size: 0.7rem; 
       color: var(--accent-primary); 
       background-color: rgba(255, 215, 0, 0.1); 
-      padding: 5px 10px; 
+      padding: 4px 8px; 
       border-radius: 4px; 
       cursor: pointer; 
-      transition: all 0.3s; 
       border: 1px solid var(--border-dim);
     }
-    .upload-btn:hover { 
+    .ai-lp-upload-btn:hover { background-color: var(--accent-primary); color: #000; }
+
+    .ai-lp-input-group textarea, 
+    .ai-lp-input-group input,
+    .ai-lp-input-group select { 
+      width: 100%; 
+      background-color: rgba(0, 0, 0, 0.3); 
+      border: 1px solid rgba(255, 215, 0, 0.2); 
+      border-radius: 4px; 
+      padding: 12px; 
+      color: #fff; 
+      font-family: inherit;
+      font-size: 0.85rem;
+      outline: none;
+      resize: vertical;
+    }
+
+    .ai-lp-btn-start { 
       background-color: var(--accent-primary); 
-      border-color: var(--accent-primary); 
-      color: #000;
-      box-shadow: 0 0 10px var(--accent-primary);
-    }
-    
-    .input-group textarea, .chat-input-wrapper textarea { 
-      width: 100%; height: 140px; 
-      background-color: rgba(0, 24, 48, 0.7); 
-      border: 1px solid var(--border-dim); 
-      border-radius: 6px; padding: 1rem; 
-      color: var(--text-primary); outline: none; resize: vertical; font-family: inherit;
-      box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
-      transition: all 0.3s;
-    }
-    .input-group textarea:focus, .chat-input-wrapper textarea:focus { 
-      border-color: var(--accent-primary); 
-      box-shadow: var(--glow-effect);
+      color: #000; 
+      border: none; 
+      padding: 15px; 
+      border-radius: 4px; 
+      font-weight: 700; 
+      cursor: pointer; 
+      width: 100%; 
+      text-transform: uppercase;
+      margin-top: 10px;
+      display: flex; justify-content: center; align-items: center; gap: 8px;
     }
 
-    .slider-container { 
-      background-color: rgba(0, 24, 48, 0.5); 
-      padding: 1rem; border-radius: 6px; 
-      border: 1px solid var(--border-dim); margin-bottom: 1rem;
+    .ai-lp-chat-history { 
+      flex: 1; 
+      overflow-y: auto; 
+      padding: 25px; 
+      display: flex; 
+      flex-direction: column; 
+      gap: 20px; 
     }
-    .slider-header { display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.875rem;}
-    .slider-header label {text-transform: uppercase; font-size: 0.8rem;}
-    .slider-header span.val { color: var(--accent-primary); font-weight: 700; text-shadow: 0 0 5px var(--accent-primary);}
-    .temp-slider { width: 100%; cursor: pointer; accent-color: var(--accent-primary);}
-    .temp-desc { font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.5rem; line-height: 1.4;}
     
-    .model-select { 
-      width: 100%; padding: 0.75rem; border-radius: 6px; 
-      background-color: rgba(0, 24, 48, 0.7); color: var(--accent-primary); 
-      border: 1px solid var(--border-dim); font-family: inherit; font-size: 0.875rem; outline: none; margin-top: 0.5rem; cursor: pointer;
-      font-weight: 600;
-    }
-    .model-select:focus { border-color: var(--accent-primary); box-shadow: var(--glow-effect);}
+    .ai-lp-message { max-width: 90%; line-height: 1.7; }
+    .ai-lp-message.user { align-self: flex-end; background: rgba(255, 215, 0, 0.15); padding: 15px 20px; border-radius: 12px; border-bottom-right-radius: 0; border: 1px solid var(--border-dim); }
+    .ai-lp-message.model { align-self: flex-start; width: 100%; }
+    .ai-lp-message-content { background: rgba(255, 255, 255, 0.05); padding: 20px; border-radius: 12px; border-bottom-left-radius: 0; border: 1px solid rgba(255,255,255,0.1); }
+    
+    .ai-lp-message-content table { border-collapse: collapse; width: 100%; margin: 15px 0; border: 1px solid var(--border-color); }
+    .ai-lp-message-content th, .ai-lp-message-content td { border: 1px solid var(--border-dim); padding: 12px; text-align: left; font-size: 0.95rem; }
+    .ai-lp-message-content th { background: rgba(255, 215, 0, 0.2); color: var(--accent-primary); }
 
-    .btn-start { 
-      background-color: transparent; 
-      color: var(--accent-primary); 
-      border: 1px solid var(--accent-primary); 
-      padding: 1rem; border-radius: 6px; font-weight: 700; font-size: 1rem; cursor: pointer; 
-      display: flex; align-items: center; justify-content: center; gap: 0.5rem; 
-      transition: all 0.3s; width: 100%; margin-top: auto;
-      text-transform: uppercase; letter-spacing: 1px;
-      box-shadow: inset 0 0 15px rgba(255, 215, 0, 0.1), 0 0 15px rgba(255, 215, 0, 0.2);
-    }
-    .btn-start:hover:not(:disabled) { 
-      background-color: var(--accent-primary); 
-      color: #000;
-      box-shadow: 0 0 25px var(--accent-primary);
-    }
-    .btn-start:disabled { opacity: 0.4; cursor: not-allowed; border-color: var(--text-secondary); color: var(--text-secondary); box-shadow: none;}
+    .ai-lp-msg-actions { margin-top: 12px; display: flex; gap: 12px; }
+    .ai-lp-action-btn { font-size: 0.75rem; padding: 6px 15px; border: 1px solid var(--border-dim); background: none; color: var(--accent-primary); cursor: pointer; border-radius: 4px; text-transform: uppercase; }
+    .ai-lp-action-btn:hover { background: var(--accent-primary); color: #000; }
 
-    .chat-panel { flex: 1; display: flex; flex-direction: column; position: relative; background-color: transparent;}
-    .chat-history { flex: 1; overflow-y: auto; padding: 2rem; display: flex; flex-direction: column; gap: 1.5rem; scroll-behavior: smooth;}
+    .ai-lp-chat-input-container { padding: 25px; background: var(--bg-header); border-top: 1px solid var(--border-color); }
+    .ai-lp-chat-input-wrapper { display: flex; gap: 12px; position: relative; max-width: 1000px; margin: 0 auto;}
+    .ai-lp-chat-input-wrapper input { width: 100%; background: rgba(0,0,0,0.3); border: 1px solid var(--border-dim); color: #fff; padding: 15px; border-radius: 4px; outline: none; }
     
-    .message { max-width: 90%; display: flex; flex-direction: column; position: relative; }
-    .message.user { align-self: flex-end; }
-    .message.model { align-self: flex-start; }
-    .message.error .message-content { background-color: rgba(255, 51, 102, 0.1); color: #ff99aa; border: 1px solid var(--error); box-shadow: 0 0 10px rgba(255, 51, 102, 0.3);}
-    
-    .message-content { padding: 1.25rem 1.5rem; border-radius: 8px; line-height: 1.6; width: 100%; overflow-x: auto;}
-    
-    .message.user .message-content { 
-      background-color: var(--user-msg); 
-      color: #fff; border-bottom-right-radius: 0; 
-      border: 1px solid var(--border-dim);
+    .ai-lp-toast {
+      position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%);
+      background: var(--accent-primary); color: #000; padding: 12px 25px; border-radius: 6px;
+      font-size: 0.9rem; font-weight: 700; z-index: 9999; animation: ai-lp-fade 3s forwards;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.4);
     }
-    .message.model:not(.error) .message-content { 
-      background-color: var(--ai-msg); 
-      color: var(--text-primary); border-bottom-left-radius: 0; 
-      border: 1px solid var(--border-dim); 
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-      backdrop-filter: blur(5px);
-    }
-    
-    .message-content table { border-collapse: collapse; width: 100%; margin-bottom: 1rem; background-color: rgba(0, 24, 48, 0.6); color: #fff; border: 1px solid var(--border-color);}
-    .message-content th, .message-content td { border: 1px solid var(--border-dim); padding: 12px; text-align: left; }
-    .message-content th { background-color: rgba(255, 215, 0, 0.15); font-weight: bold; color: var(--accent-primary); text-transform: uppercase;}
-    
-    .msg-actions { display: flex; gap: 0.5rem; margin-top: 0.5rem; padding-left: 0.5rem; opacity: 0.6; transition: opacity 0.3s;}
-    .msg-actions:hover { opacity: 1; }
-    .action-btn { display: inline-flex; align-items: center; gap: 5px; font-size: 0.75rem; color: var(--accent-primary); background: rgba(255, 215, 0, 0.05); border: 1px solid var(--border-dim); padding: 6px 12px; border-radius: 4px; cursor: pointer; transition: all 0.3s; text-transform: uppercase;}
-    .action-btn:hover { background-color: var(--accent-primary); color: #000; box-shadow: 0 0 10px var(--accent-primary); }
-
-    .chat-input-container { padding: 1.5rem; background-color: var(--bg-card); border-top: 1px solid var(--border-color); flex-shrink: 0; backdrop-filter: blur(10px);}
-    .chat-input-wrapper { display: flex; gap: 0.75rem; max-width: 60rem; margin: 0 auto; position: relative;}
-    .chat-input-wrapper textarea { height: 60px; padding-right: 4rem;}
-    
-    .send-btn { 
-      position: absolute; right: 0.5rem; top: 50%; transform: translateY(-50%); 
-      background-color: transparent; color: var(--accent-primary); 
-      border: 1px solid var(--accent-primary); width: 45px; height: 45px; border-radius: 6px; 
-      cursor: pointer; display: flex; align-items: center; justify-content: center; 
-      transition: all 0.3s;
-    }
-    .send-btn:hover:not(:disabled) { background-color: var(--accent-primary); color: #000; box-shadow: 0 0 15px var(--accent-primary);}
-
-    .typing-indicator { display: flex; gap: 0.4rem; padding: 1.25rem 1.5rem; background-color: var(--ai-msg); border-radius: 8px; border-bottom-left-radius: 0; border: 1px solid var(--border-dim); width: fit-content; align-self: flex-start;}
-    .dot { width: 10px; height: 10px; background-color: var(--accent-primary); border-radius: 50%; animation: bounce 1.4s infinite ease-in-out both; box-shadow: 0 0 8px var(--accent-primary);}
-    .dot:nth-child(1) { animation-delay: -0.32s; }
-    .dot:nth-child(2) { animation-delay: -0.16s; }
-    @keyframes bounce { 0%, 80%, 100% { transform: scale(0.3); opacity: 0.3;} 40% { transform: scale(1); opacity: 1;} }
-    
-    .toast {position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(20px);padding:1rem 2rem;border-radius:8px;background-color:rgba(255, 215, 0, 0.9);color:#000;font-weight:700;z-index:9999;box-shadow:0 0 20px rgba(255, 215, 0, 0.6);opacity:0;animation:fadeInOutToast 3s forwards; text-transform: uppercase; letter-spacing: 1px;}
-    @keyframes fadeInOutToast {0%,100%{opacity:0;transform:translateX(-50%) translateY(20px)}10%,90%{opacity:1;transform:translateX(-50%) translateY(0)}}
+    @keyframes ai-lp-fade { 0% {opacity: 0; transform: translate(-50%, 20px);} 15% {opacity: 1; transform: translate(-50%, 0);} 85% {opacity: 1; transform: translate(-50%, 0);} 100% {opacity: 0; transform: translate(-50%, -20px);} }
 
     @media (max-width: 768px) {
-      .fullscreen-btn { top: 0.5rem; right: 0.5rem; transform: none; padding: 6px; }
-      .fullscreen-btn span { display: none; } 
-      .main-container { flex-direction: column; }
-      .config-panel { width: 100%; height: 400px; border-right: none; border-bottom: 1px solid var(--border-color); }
+      .ai-lp-main-container { flex-direction: column; }
+      .ai-lp-config-panel { width: 100%; height: 400px; border-right: none; border-bottom: 1px solid var(--border-color); }
+      .ai-lp-header h1 { font-size: 1.2rem; }
     }
   </style>
 
-  <div id="root" style="display: flex; flex-direction: column; flex: 1 1 0%; overflow: hidden;"></div>
+  <div id="ai-lp-root" style="height: 100%; display: flex; flex-direction: column;"></div>
 
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
-  <script crossorigin="" src="https://unpkg.com/react@18/umd/react.development.js"></script>
-  <script crossorigin="" src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-  <script crossorigin="" src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
   <script type="text/babel">
-    const SendIcon = () => (<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>);
-    const UploadIcon = () => (<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>);
-    const CopyIcon = () => (<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>);
-    const WordIcon = () => (<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 22h14a2 2 0 0 0 2-2V7l-5-5H6a2 2 0 0 0-2 2v4"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="m2 10 1.5 8h1L6 12l1.5 6h1L10 10"/></svg>);
-    const SparklesIcon = () => (<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>);
-    const MaximizeIcon = () => (<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>);
-    const MinimizeIcon = () => (<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"/></svg>);
-    const CameraIcon = () => (<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>);
+    const { useState, useRef, useEffect } = React;
 
     const defaultStructure = `Tuần: .... Ngày soạn: ....
 Tiết PPCT: .... Ngày dạy: ....
@@ -259,53 +235,25 @@ TÊN BÀI HỌC: [TÊN BÀI HỌC]
 **B. PHƯƠNG PHÁP TRỌNG TÂM**
 
 **C. CHUẨN BỊ CỦA GIÁO VIÊN VÀ HỌC SINH**
-1. Giáo viên
-2. Học sinh
 
 **D. TIẾN TRÌNH DẠY HỌC**
 | TỔ CHỨC HOẠT ĐỘNG | YÊU CẦU CẦN ĐẠT (NỘI DUNG GHI BẢNG) |
 |---|---|
-| **HOẠT ĐỘNG 1: KHỞI ĐỘNG** <br> **- Thời gian:** <br> **- Mục tiêu:** <br> **- Sản phẩm dự kiến:** <br> **- Tổ chức thực hiện:** <br> **Bước 1:** Chuyển giao nhiệm vụ <br> **Bước 2:** Thực hiện nhiệm vụ <br> **Bước 3:** Báo cáo kết quả <br> **Bước 4:** Đánh giá kết quả | |
-| **HOẠT ĐỘNG 2: TÌM HIỂU TRI THỨC** <br> (Cấu trúc 4 bước tương tự Hoạt động 1) | |
-| **HOẠT ĐỘNG 3: LUYỆN TẬP** <br> (Cấu trúc 4 bước tương tự) | |
-| **HOẠT ĐỘNG 4: VẬN DỤNG** <br> (Cấu trúc 4 bước tương tự) | |`;
+| **HOẠT ĐỘNG 1: KHỞI ĐỘNG** <br> **- Thời gian:** <br> **- Mục tiêu:** <br> **- Tổ chức thực hiện:** <br> **Bước 1:** Chuyển giao nhiệm vụ <br> **Bước 2:** Thực hiện nhiệm vụ <br> **Bước 3:** Báo cáo kết quả <br> **Bước 4:** Đánh giá kết quả | |`;
 
-    const defaultSample = `BÀI MẪU THAM KHẢO: THỰC HÀNH TIẾNG VIỆT - THÁN TỪ
-
+    const defaultSample = `BÀI MẪU THAM KHẢO: THỰC HÀNH TIẾNG VIỆT
 **A. MỤC TIÊU BÀI HỌC**
 1. Kiến thức: Tri thức về đặc điểm và tác dụng của thán từ.
-2. Năng lực: 
-- 2.1. Năng lực đặc thù: HS xác định được thán từ.
-- 2.2. Năng lực chung: Giao tiếp, hợp tác, tự học.
+2. Năng lực: Giao tiếp, hợp tác, tự học.
 3. Phẩm chất: Tích cực, sôi nổi.
-
-**B. PHƯƠNG PHÁP TRỌNG TÂM:** Trò chơi học tập, Thảo luận nhóm, Tia chớp, Sắm vai.
-
-**C. CHUẨN BỊ:** GV chuẩn bị PPT, phiếu học tập, thẻ từ. HS đọc trước bài.
-
-**D. TIẾN TRÌNH DẠY HỌC**
-| TỔ CHỨC HOẠT ĐỘNG | YÊU CẦU CẦN ĐẠT |
-|---|---|
-| **HOẠT ĐỘNG 2: TÌM HIỂU TRI THỨC (10 phút)** <br> **- Mục tiêu:** HS nhận diện đặc điểm thán từ. <br> **- Tổ chức thực hiện:** <br> **Bước 1:** GV sử dụng Kĩ thuật Mảnh ghép, chia lớp thành các nhóm chuyên gia nghiên cứu các ví dụ khác nhau. <br> **Bước 2:** HS thảo luận nhóm, ghi ý kiến ra giấy A0. <br> **Bước 3:** Đại diện các nhóm trình bày, các nhóm khác phản biện. <br> **Bước 4:** GV chốt lại kiến thức cốt lõi. | **I. TRI THỨC TIẾNG VIỆT** <br> 1. Khái niệm: Thán từ dùng để bộc lộ tình cảm, cảm xúc hoặc gọi - đáp. <br> 2. Vị trí: Thường đứng đầu câu. |`;
-
-    // Hàm phụ trợ chuyển đổi File ảnh sang Base64
-    const fileToBase64 = (file) => new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result.split(',')[1]);
-      reader.onerror = error => reject(error);
-    });
+**B. PHƯƠNG PHÁP TRỌNG TÂM:** Trò chơi, Thảo luận nhóm.
+**C. CHUẨN BỊ:** GV chuẩn bị PPT. HS đọc trước bài.`;
 
     function App() {
-      const { useState, useRef, useEffect } = React;
-      
       const [contextStructure, setContextStructure] = useState(defaultStructure);
       const [contextSample, setContextSample] = useState(defaultSample);
       const [contextTextbook, setContextTextbook] = useState('');
-      const [temperature, setTemperature] = useState(0.5);
-      const [aiModel, setAiModel] = useState('gemini-2.5-flash'); 
-      const [isFullscreen, setIsFullscreen] = useState(false);
-      
+      const [userApiKey, setUserApiKey] = useState('');
       const [messages, setMessages] = useState([]);
       const [inputValue, setInputValue] = useState('');
       const [isLoading, setIsLoading] = useState(false);
@@ -313,124 +261,25 @@ TÊN BÀI HỌC: [TÊN BÀI HỌC]
       
       const chatEndRef = useRef(null);
       
-      // Môi trường tự cấp key trong cửa sổ Preview, khi thầy mang code này lên Blogger hãy dán API key thật vào đây nhé
-      const apiKey = "AIzaSyBTCmb2ZwvlPFikSaBleFlC34FFdVjYXsI"; 
-
-      useEffect(() => {
-        const handleFullscreenChange = () => {
-          setIsFullscreen(!!document.fullscreenElement);
-        };
-        document.addEventListener('fullscreenchange', handleFullscreenChange);
-        return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
-      }, []);
+      const structureInputRef = useRef(null);
+      const sampleInputRef = useRef(null);
+      const textbookInputRef = useRef(null);
 
       useEffect(() => {
         chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
       }, [messages, isLoading]);
 
-      const toggleFullscreen = () => {
-        if (!document.fullscreenElement) {
-          document.documentElement.requestFullscreen().catch((err) => {
-            console.error(`Lỗi toàn màn hình: ${err.message}`);
-          });
-        } else {
-          if (document.exitFullscreen) {
-            document.exitFullscreen();
-          }
-        }
-      };
-
       const showToast = (msg) => {
         setToastMsg(msg);
-        setTimeout(() => setToastMsg(''), 3000);
+        setTimeout(() => setToastMsg(''), 4000);
       };
 
-      const handleFileUpload = async (event, setterFunc, isAppendMode = false) => {
-        const files = Array.from(event.target.files);
-        if (files.length === 0) return;
-
-        setIsLoading(true);
-
-        for (let i = 0; i < files.length; i++) {
-          const file = files[i];
-          const fileExtension = file.name.split('.').pop().toLowerCase();
-          const mimeType = file.type;
-          
-          showToast(`Đang xử lý file ${i + 1}/${files.length}: ${file.name}...`);
-
-          if (fileExtension === 'txt') {
-            const text = await new Promise((resolve) => {
-              const reader = new FileReader();
-              reader.onload = (e) => resolve(e.target.result);
-              reader.readAsText(file);
-            });
-            setterFunc(prev => isAppendMode ? prev + (prev ? '\n\n' : '') + text : text);
-          } else if (fileExtension === 'docx') {
-            const arrayBuffer = await new Promise((resolve) => {
-              const reader = new FileReader();
-              reader.onload = (e) => resolve(e.target.result);
-              reader.readAsArrayBuffer(file);
-            });
-            try {
-              const result = await mammoth.extractRawText({ arrayBuffer: arrayBuffer });
-              setterFunc(prev => isAppendMode ? prev + (prev ? '\n\n' : '') + result.value : result.value);
-            } catch (err) {
-              showToast(`Lỗi giải mã DOCX: ${err.message}`);
-            }
-          } else if (mimeType.startsWith('image/')) {
-            try {
-              const base64Data = await fileToBase64(file);
-              const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
-
-              const payload = {
-                  contents: [{
-                      parts: [
-                          { text: "Hãy đọc và trích xuất nguyên văn toàn bộ nội dung chữ trong bức ảnh này. Giữ nguyên cấu trúc đoạn văn, tiêu đề. Chỉ trả về kết quả văn bản, tuyệt đối không thêm bình luận hay giải thích." },
-                          { inlineData: { mimeType: mimeType, data: base64Data } }
-                      ]
-                  }]
-              };
-
-              const response = await fetch(apiUrl, {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify(payload)
-              });
-
-              const data = await response.json();
-              if (!response.ok) throw new Error(data.error?.message || 'Lỗi kết nối AI đọc ảnh (Thầy cần điền API Key vào code)');
-              
-              const extractedText = data.candidates[0].content.parts[0].text;
-              
-              setterFunc(prev => isAppendMode ? prev + (prev ? '\n\n--- Hết trang trước, tiếp tục trang mới ---\n\n' : '') + extractedText : extractedText);
-            } catch (err) {
-              showToast(`Lỗi nhận diện ảnh: ${err.message}`);
-            }
-          } else {
-            showToast(`Bỏ qua file ${file.name}: Không hỗ trợ định dạng này.`);
-          }
-        }
-        
-        showToast(`Đã xử lý xong ${files.length} file!`);
-        setIsLoading(false);
-        event.target.value = ''; 
-      };
-
-      const renderMarkdown = (text) => {
-        if (typeof marked !== 'undefined') {
-          return { __html: marked.parse(text, { breaks: true }) };
-        }
-        return { __html: text.replace(/\n/g, '<br/>') };
-      };
-
-      const handleCopy = (text) => {
-        document.execCommand('copy');
-        navigator.clipboard.writeText(text).then(() => {
-          showToast('Đã sao chép vào bộ nhớ đệm!');
-        }).catch(() => {
-          showToast('Lỗi sao chép, vui lòng thao tác thủ công.');
-        });
-      };
+      const fileToBase64 = (file) => new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result.split(',')[1]);
+        reader.onerror = error => reject(error);
+      });
 
       const handleExportWord = (htmlString, index) => {
         let processedHtml = htmlString
@@ -458,272 +307,269 @@ TÊN BÀI HỌC: [TÊN BÀI HỌC]
         const fileDownload = document.createElement("a");
         document.body.appendChild(fileDownload);
         fileDownload.href = source;
-        fileDownload.download = `Giao_An_AI_Phien_Ban_${index}.doc`;
+        fileDownload.download = `Giao_An_AI_${index}.doc`;
         fileDownload.click();
         document.body.removeChild(fileDownload);
         
-        showToast('Đã xuất file Word định dạng chuẩn!');
+        showToast('✅ Đã tải file Word về máy!');
       };
 
-      const handleSendMessage = async (customText) => {
-        const textToSend = typeof customText === 'string' ? customText : inputValue;
-        if (!textToSend.trim()) return;
-
-        if (!contextTextbook.trim() && textToSend.includes("hoàn chỉnh")) {
-            showToast('LỖI: CHƯA CUNG CẤP DỮ LIỆU SÁCH GIÁO KHOA!');
-            return;
+      const handleCopy = (text) => {
+        const textArea = document.createElement("textarea");
+        textArea.value = text;
+        textArea.style.position = "fixed";
+        textArea.style.left = "-9999px";
+        textArea.style.top = "0";
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        try {
+          const successful = document.execCommand('copy');
+          if (successful) showToast('✅ Đã sao chép thành công!');
+        } catch (err) {
+          showToast('❌ Trình duyệt chặn sao chép.');
         }
+        document.body.removeChild(textArea);
+      };
 
-        if (typeof customText !== 'string') {
-           setInputValue(''); 
-        }
+      const handleFileUpload = async (event, setterFunc, isAppendMode = false) => {
+        const files = Array.from(event.target.files);
+        if (files.length === 0) return;
         
-        const newMessages = [...messages, { role: 'user', text: textToSend }];
-        setMessages(newMessages);
         setIsLoading(true);
+        const activeApiKey = userApiKey.trim();
+        let successCount = 0;
+        let failCount = 0;
+        let lastError = "";
+
+        for (let i = 0; i < files.length; i++) {
+          const file = files[i];
+          const fileType = file.type;
+
+          const processingMsg = `\n\n[HỆ THỐNG ĐANG XỬ LÝ: ${file.name}... VUI LÒNG ĐỢI]`;
+          setterFunc(prev => isAppendMode ? prev + processingMsg : processingMsg);
+          showToast(`⏳ Đang xử lý tệp ${i + 1}/${files.length}: ${file.name}...`);
+
+          try {
+            if (file.name.endsWith('.docx')) {
+              const arrayBuffer = await file.arrayBuffer();
+              const result = await mammoth.extractRawText({ arrayBuffer });
+              setterFunc(prev => {
+                const clean = prev.replace(processingMsg, '');
+                return isAppendMode ? clean + (clean ? "\n\n" : "") + result.value : result.value;
+              });
+              successCount++;
+            } else if (fileType.startsWith('image/') || fileType === 'application/pdf') {
+              
+              const base64Data = await fileToBase64(file);
+              
+              // XỬ LÝ ĐỊNH TUYẾN MODEL THÔNG MINH
+              // Nếu nhập key (chạy trên Blogger) thì dùng model công khai 2.5-flash.
+              // Nếu bỏ trống key (chạy trong Canvas) thì để Canvas tự cấp proxy model preview.
+              const requestModel = activeApiKey ? "gemini-2.5-flash" : "gemini-2.5-flash-preview-09-2025";
+              const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${requestModel}:generateContent?key=${activeApiKey}`;
+              
+              const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  contents: [{
+                    parts: [
+                      { text: "Hãy trích xuất nguyên văn văn bản từ tài liệu này. Luôn dùng gạch ngang dài (—) để đánh dấu lời của nhân vật. Các chú thích in đậm và để trong cặp dấu ngoặc đơn (ví dụ (1)), chú thích đặt ở cuối truyện. Tuyệt đối không thêm bình luận nào khác ngoài văn bản." },
+                      { inlineData: { mimeType: fileType, data: base64Data } }
+                    ]
+                  }]
+                })
+              });
+              
+              const data = await response.json();
+              
+              if (!response.ok) {
+                 // Bắt lỗi cụ thể nếu thiếu API Key khi dùng trên Blogger
+                 if (response.status === 400 || (data.error && data.error.message.includes("API key"))) {
+                     throw new Error("Vui lòng nhập API Key hợp lệ ở Bảng điều khiển!");
+                 }
+                 throw new Error(data.error?.message || "Lỗi xử lý API");
+              }
+              
+              if (data.candidates && data.candidates[0].content) {
+                  const text = data.candidates[0].content.parts[0].text;
+                  setterFunc(prev => {
+                    const clean = prev.replace(processingMsg, '');
+                    return isAppendMode ? clean + (clean ? `\n\n--- Hết trang trước, chuyển trang tiếp theo ---\n\n` : "") + text : text;
+                  });
+                  successCount++;
+              } else {
+                  throw new Error("Nội dung phản hồi trống.");
+              }
+            } else if (file.name.endsWith('.txt')) {
+              const text = await file.text();
+              setterFunc(prev => {
+                const clean = prev.replace(processingMsg, '');
+                return isAppendMode ? clean + (clean ? "\n\n" : "") + text : text;
+              });
+              successCount++;
+            } else {
+              throw new Error("Định dạng tệp không được hỗ trợ.");
+            }
+          } catch (err) {
+            console.error("Lỗi xử lý file:", err);
+            lastError = err.message;
+            setterFunc(prev => prev.replace(processingMsg, `\n\n[❌ LỖI XỬ LÝ FILE: ${file.name}]`));
+            failCount++;
+          }
+        }
         
-        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${aiModel}:generateContent?key=${apiKey}`;
+        setIsLoading(false);
+        event.target.value = '';
 
-        const systemInstructionText = `Bạn là một chuyên gia soạn giáo án siêu việt, có tư duy sư phạm hiện đại. 
-QUY TẮC TỐI THƯỢNG VÀ BẮT BUỘC PHẢI TUÂN THỦ:
-1. KHÔNG BAO GIỜ chào hỏi, KHÔNG dạ vâng, KHÔNG giải thích. Chỉ in ra trực tiếp nội dung giáo án thành phẩm.
-2. Tự phân tích "Nội dung Sách Giáo Khoa" để lấp đầy toàn bộ thông tin kiến thức vào giáo án. KHÔNG để lại chữ [Cần thông tin từ người dùng].
-3. QUY TẮC IN ĐẬM (BẮT BUỘC):
-   - Phải in đậm các mục lớn và tên mục: **A. MỤC TIÊU BÀI HỌC**, **B. PHƯƠNG PHÁP TRỌNG TÂM**, **C. CHUẨN BỊ...**, **D. TIẾN TRÌNH DẠY HỌC**, **I.**, **II.**, **III.**...
-   - Phải in đậm tên hoạt động: **HOẠT ĐỘNG [Số]: [Tên hoạt động]**
-   - Phải in đậm các bước: **Bước 1:**, **Bước 2:**, **Bước 3:**, **Bước 4:**
-   - Phải in đậm các mục nhỏ trong hoạt động: **- Thời gian:**, **- Mục tiêu:**, **- Sản phẩm dự kiến:**, **- Tổ chức thực hiện:**
-4. QUY TẮC TẠO BẢNG TIẾN TRÌNH DẠY HỌC (BẮT BUỘC):
-   - Bảng gồm đúng 2 cột: "TỔ CHỨC HOẠT ĐỘNG" và "YÊU CẦU CẦN ĐẠT".
-   - ĐỂ XUỐNG DÒNG BÊN TRONG Ô CỦA BẢNG, BẠN BẮT BUỘC PHẢI DÙNG THẺ <br>. TUYỆT ĐỐI KHÔNG BẤM ENTER XUỐNG DÒNG BÊN TRONG BẢNG VÌ SẼ LÀM VỠ CẤU TRÚC BẢNG.
-   - Ví dụ đúng: | **HOẠT ĐỘNG 1: KHỞI ĐỘNG** <br> **- Mục tiêu:** ... <br> **Bước 1:** ... |
-5. Ở cột "YÊU CẦU CẦN ĐẠT", BẮT BUỘC phải ghi chi tiết NỘI DUNG GHI BẢNG (khái niệm, đặc điểm, công dụng, ĐÁP ÁN CHI TIẾT bài tập). Tuyệt đối không ghi chung chung.
-6. Hãy lồng ghép đa dạng các phương pháp sư phạm: Trò chơi học tập, Thảo luận nhóm, Kĩ thuật khăn trải bàn, Kĩ thuật mảnh ghép, Sắm vai... để lớp học sinh động.
+        if (failCount > 0) {
+          showToast(`⚠️ Lỗi ${failCount} tệp: ${lastError}`);
+        } else if (successCount > 0) {
+          showToast(`✅ Đã trích xuất xong ${successCount} tệp!`);
+        }
+      };
 
-TÀI LIỆU THAM CHIẾU:
---- CẤU TRÚC BẮT BUỘC ---
+      const handleSendMessage = async () => {
+        if (!inputValue.trim()) return;
+        const activeApiKey = userApiKey.trim();
+
+        setMessages(prev => [...prev, { role: 'user', text: inputValue }]);
+        setInputValue('');
+        setIsLoading(true);
+
+        const systemInstructionText = `Bạn là chuyên gia sư phạm. Soạn giáo án chi tiết dựa vào SGK, Cấu trúc Framework và Dữ liệu mẫu. 
+Luôn dùng gạch ngang dài (—) cho lời thoại. Chú thích in đậm trong ngoặc đơn ở cuối bài. Mọi bảng biểu chỉ dùng mã HTML <br> để xuống dòng bên trong ô, tuyệt đối không ấn enter.
+BẮT BUỘC: Toàn bộ phần "D. TIẾN TRÌNH DẠY HỌC" (hoặc các hoạt động dạy học) phải được kẻ BẢNG (table) rõ ràng, tuyệt đối không viết dạng văn bản thường ngoài bảng.
+
+[CẤU TRÚC BẮT BUỘC]
 ${contextStructure}
 
---- GIÁO ÁN MẪU ---
+[DỮ LIỆU MẪU]
 ${contextSample}
 
---- NỘI DUNG SGK CẦN SOẠN ---
+[NỘI DUNG SÁCH GIÁO KHOA]
 ${contextTextbook}`;
 
-        const apiContents = newMessages.map(msg => ({
-            role: msg.role === 'user' ? 'user' : 'model',
-            parts: [{ text: msg.text }]
-        }));
-
-        const requestPayload = {
-            system_instruction: { parts: [{ text: systemInstructionText }] },
-            contents: apiContents,
-            generationConfig: { temperature: parseFloat(temperature) }
-        };
+        const requestModel = activeApiKey ? "gemini-2.5-flash" : "gemini-2.5-flash-preview-09-2025";
+        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${requestModel}:generateContent?key=${activeApiKey}`;
 
         try {
           const response = await fetch(apiUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(requestPayload)
+            body: JSON.stringify({
+              contents: [{ parts: [{ text: inputValue }] }],
+              systemInstruction: { parts: [{ text: systemInstructionText }] }
+            })
           });
-          
           const data = await response.json();
           
           if (!response.ok) {
-            throw new Error(data.error?.message || 'Kết nối máy chủ thất bại. API Key không hợp lệ hoặc chưa được cấu hình.');
+             if (response.status === 400 || (data.error && data.error.message.includes("API key"))) {
+                 throw new Error("Vui lòng nhập API Key hợp lệ ở Bảng điều khiển!");
+             }
+             throw new Error(data.error?.message || "Lỗi xử lý API");
           }
           
-          if (data.candidates && data.candidates[0].finishReason === 'SAFETY') {
-            throw new Error("Tường lửa an toàn đã chặn nội dung này.");
+          if (data.candidates && data.candidates[0].content) {
+              setMessages(prev => [...prev, { role: 'model', text: data.candidates[0].content.parts[0].text }]);
           }
-
-          if (!data.candidates || !data.candidates[0].content) {
-            throw new Error("Lỗi luồng dữ liệu, vui lòng đổi Mô hình xử lý.");
-          }
-          
-          const aiResponseText = data.candidates[0].content.parts[0].text;
-          setMessages(prev => [...prev, { role: 'model', text: aiResponseText }]);
-          
-        } catch (error) {
-          console.error("Error:", error);
-          setMessages(prev => [...prev, { role: 'model', text: `[LỖI HỆ THỐNG]: ${error.message}`, isError: true }]);
-        } finally {
-          setIsLoading(false);
+        } catch (err) {
+          showToast("❌ " + err.message);
         }
-      };
-
-      const handleKeyDown = (e) => {
-        if (e.key === 'Enter' && !e.shiftKey) {
-          e.preventDefault();
-          handleSendMessage();
-        }
-      };
-
-      const getTempDescription = (val) => {
-        if (val <= 0.3) return "Nghiêm túc, ít trò chơi, bám sát văn bản.";
-        if (val <= 0.6) return "Cân bằng, có lồng ghép thảo luận nhóm, trò chơi nhẹ nhàng.";
-        return "Đột phá, thiết kế nhiều hoạt động sắm vai, dự án lớp học sôi nổi.";
+        setIsLoading(false);
       };
 
       return (
         <React.Fragment>
-          <div className="header">
-            <h1>👩‍🏫 TRỢ LÝ SOẠN GIÁO ÁN AI - CYBER MODE</h1>
-            <p style={{color: 'var(--text-secondary)', fontSize: '0.875rem', marginTop: '0.25rem'}}>
-              Tính năng mới: Hỗ trợ Tải File Ảnh (.JPG/.PNG) quét trực tiếp nội dung Sách Giáo Khoa bằng AI Vision.
-            </p>
-            <button className="fullscreen-btn" onClick={toggleFullscreen} title={isFullscreen ? "Thu nhỏ màn hình" : "Toàn màn hình"}>
-              {isFullscreen ? <MinimizeIcon /> : <MaximizeIcon />}
-              <span>{isFullscreen ? "Thu Nhỏ" : "Toàn Màn Hình"}</span>
+          <div className="ai-lp-header">
+            <h1>TRỢ LÝ SOẠN GIÁO ÁN THỰC HÀNH TIẾNG VIỆT</h1>
+            <div className="ai-lp-subtitle">Hỗ trợ soạn giáo án dựa trên dữ liệu SGK, giáo án mẫu và cấu trúc framework (theo định hướng phát triển năng lực phẩm chất học sinh).</div>
+            <div className="ai-lp-features-note">Tính năng mới: Hỗ trợ Tải file word/image/pdf quét trực tiếp nội dung bằng AI.</div>
+            <button className="ai-lp-fullscreen-btn" onClick={() => document.getElementById('ai-lesson-planner-wrapper').requestFullscreen()}>
+              🔳 TOÀN MÀN HÌNH
             </button>
           </div>
 
-          <div className="main-container">
-            <div className="config-panel">
+          <div className="ai-lp-main-container">
+            <div className="ai-lp-config-panel">
               <h2>1. BẢNG ĐIỀU KHIỂN</h2>
-              
-              <div className="slider-container">
-                <div className="slider-header">
-                  <label>Mức độ sáng tạo</label>
-                  <span className="val">{temperature}</span>
+              <div className="ai-lp-input-group">
+                <div className="ai-lp-label-header">
+                  <label>MÃ KHÓA API (GEMINI)</label>
                 </div>
-                <input 
-                  type="range" min="0" max="2" step="0.1" 
-                  value={temperature} onChange={(e) => setTemperature(e.target.value)} 
-                  className="temp-slider"
-                />
-                <div className="temp-desc">{getTempDescription(temperature)}</div>
+                <input type="password" value={userApiKey} onChange={(e)=>setUserApiKey(e.target.value)} placeholder="Nhập Key từ Google Studio..." />
               </div>
 
-              <div className="slider-container" style={{marginBottom: '1.25rem'}}>
-                <div className="slider-header">
-                  <label>Lõi xử lý AI (Core)</label>
-                </div>
-                <select 
-                  value={aiModel} 
-                  onChange={(e) => setAiModel(e.target.value)}
-                  className="model-select"
-                >
-                  <option value="gemini-2.5-flash">Gemini 2.5 Flash (Tốc độ cao & Hỗ trợ Ảnh)</option>
-                  <option value="gemini-2.5-pro">Gemini 2.5 Pro (Tư duy sâu & Hỗ trợ Ảnh)</option>
-                </select>
-              </div>
-
-              <div className="input-group">
-                <div className="label-header">
+              <div className="ai-lp-input-group">
+                <div className="ai-lp-label-header">
                   <label>CẤU TRÚC FRAMEWORK</label>
-                  <label className="upload-btn">
-                    <UploadIcon /> NHẬP FILE
-                    <input type="file" accept=".txt,.docx" style={{display: 'none'}} onChange={(e) => handleFileUpload(e, setContextStructure, false)} />
-                  </label>
+                  <label className="ai-lp-upload-btn" onClick={() => structureInputRef.current.click()}>📁 NHẬP FILE</label>
                 </div>
-                <textarea value={contextStructure} onChange={(e)=>setContextStructure(e.target.value)} />
-              </div>
-              
-              <div className="input-group">
-                <div className="label-header">
-                  <label>DỮ LIỆU HUẤN LUYỆN (MẪU)</label>
-                  <label className="upload-btn">
-                    <UploadIcon /> NHẬP FILE
-                    <input type="file" accept=".txt,.docx" style={{display: 'none'}} onChange={(e) => handleFileUpload(e, setContextSample, false)} />
-                  </label>
-                </div>
-                <textarea value={contextSample} onChange={(e)=>setContextSample(e.target.value)} />
-              </div>
-              
-              <div className="input-group" style={{ marginBottom: '1.5rem' }}>
-                <div className="label-header">
-                  <label>NGUỒN SÁCH GIÁO KHOA</label>
-                  <label className="upload-btn" title="Hỗ trợ tải lên ảnh chụp SGK (.jpg, .png) để AI quét chữ">
-                    <CameraIcon /> TẢI ẢNH / DOC
-                    <input type="file" multiple accept=".txt,.docx,image/*" style={{display: 'none'}} onChange={(e) => handleFileUpload(e, setContextTextbook, true)} />
-                  </label>
-                </div>
-                <textarea 
-                  value={contextTextbook} 
-                  onChange={(e)=>setContextTextbook(e.target.value)} 
-                  placeholder="Dán nội dung SGK, hoặc tải ảnh chụp trang sách lên để AI tự động trích xuất chữ và nối vào đây..." 
-                  style={{borderColor: contextTextbook.trim() ? 'var(--border-dim)' : 'var(--accent-primary)'}}
-                />
+                <input type="file" ref={structureInputRef} style={{display: 'none'}} accept=".txt,.docx" onChange={(e) => handleFileUpload(e, setContextStructure, false)} />
+                <textarea style={{height: '100px'}} value={contextStructure} onChange={(e)=>setContextStructure(e.target.value)} />
               </div>
 
-              <button 
-                className="btn-start" 
-                onClick={() => handleSendMessage("Dựa vào chỉ thị hệ thống và nội dung sách giáo khoa đã cung cấp, hãy soạn một giáo án hoàn chỉnh cho bài học này.")}
-                disabled={isLoading}
-              >
-                <SparklesIcon /> KHỞI TẠO TIẾN TRÌNH
+              <div className="ai-lp-input-group">
+                <div className="ai-lp-label-header">
+                  <label>DỮ LIỆU HUẤN LUYỆN</label>
+                  <label className="ai-lp-upload-btn" onClick={() => sampleInputRef.current.click()}>📁 NHẬP FILE</label>
+                </div>
+                <input type="file" ref={sampleInputRef} style={{display: 'none'}} accept=".txt,.docx" onChange={(e) => handleFileUpload(e, setContextSample, false)} />
+                <textarea style={{height: '100px'}} value={contextSample} onChange={(e)=>setContextSample(e.target.value)} />
+              </div>
+
+              <div className="ai-lp-input-group">
+                <div className="ai-lp-label-header">
+                  <label>NGUỒN SÁCH GIÁO KHOA</label>
+                  <label className="ai-lp-upload-btn" onClick={() => textbookInputRef.current.click()}>📷 TẢI ẢNH/PDF</label>
+                </div>
+                <input type="file" ref={textbookInputRef} multiple style={{display: 'none'}} accept=".docx,.pdf,image/*,.txt" onChange={(e) => handleFileUpload(e, setContextTextbook, true)} />
+                <textarea style={{height: '150px'}} value={contextTextbook} onChange={(e)=>setContextTextbook(e.target.value)} placeholder="Dán nội dung hoặc tải tệp bằng nút bên trên..." />
+              </div>
+
+              <button className="ai-lp-btn-start" onClick={() => setInputValue("Dựa vào thông tin đã cung cấp, hãy soạn một giáo án hoàn chỉnh.") || handleSendMessage()} disabled={isLoading}>
+                🚀 BẮT ĐẦU SOẠN THẢO
               </button>
             </div>
 
-            <div className="chat-panel">
-              <div className="chat-history">
+            <div className="ai-lp-chat-panel">
+              <div className="ai-lp-chat-history">
                 {messages.length === 0 && (
-                  <div style={{margin: 'auto', textAlign: 'center', color: 'var(--text-secondary)'}}>
-                    <div style={{marginBottom: '1rem', display: 'flex', justifyContent: 'center'}}>
-                      <SparklesIcon />
-                    </div>
-                    <p style={{fontSize: '1.25rem', marginBottom: '0.5rem', color: 'var(--text-primary)', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '1px'}}>HỆ THỐNG ĐÃ SẴN SÀNG</p>
-                    <p>Vui lòng nhập liệu hoặc <b>Tải ảnh chụp Sách giáo khoa</b> để bắt đầu.</p>
+                  <div style={{margin: 'auto', textAlign: 'center', opacity: 0.5}}>
+                    <div style={{fontSize: '3.5rem', marginBottom: '15px'}}>👨‍🏫</div>
+                    Sẵn sàng soạn thảo giáo án. Thầy hãy nhập yêu cầu bên dưới.
                   </div>
                 )}
-                
-                {messages.map((msg, index) => {
-                  const htmlContent = msg.role === 'model' && !msg.isError ? renderMarkdown(msg.text) : {__html: msg.text.replace(/\n/g, '<br/>')};
-                  const msgClass = `message ${msg.role} ${msg.isError ? 'error' : ''}`;
-                  
-                  return (
-                    <div key={index} className={msgClass}>
-                      <div className="message-content" dangerouslySetInnerHTML={htmlContent}></div>
-                      
-                      {msg.role === 'model' && !msg.isError && (
-                        <div className="msg-actions">
-                          <button className="action-btn" onClick={() => handleCopy(msg.text)} title="Sao chép văn bản">
-                            <CopyIcon /> COPY
-                          </button>
-                          <button className="action-btn" onClick={() => {
-                            const renderedHTML = renderMarkdown(msg.text).__html;
-                            handleExportWord(renderedHTML, index);
-                          }} title="Lưu thành file Word (.doc)">
-                            <WordIcon /> EXPORT WORD
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                  )
-                })}
-                
-                {isLoading && (
-                  <div className="typing-indicator">
-                    <div className="dot"></div><div className="dot"></div><div className="dot"></div>
+                {messages.map((m, i) => (
+                  <div key={i} className={`ai-lp-message ${m.role}`}>
+                    <div className="ai-lp-message-content" dangerouslySetInnerHTML={{ __html: m.role === 'model' ? marked.parse(m.text) : m.text }}></div>
+                    {m.role === 'model' && (
+                      <div className="ai-lp-msg-actions">
+                        <button className="ai-lp-action-btn" onClick={() => handleCopy(m.text)}>Sao chép giáo án</button>
+                        <button className="ai-lp-action-btn" onClick={() => handleExportWord(marked.parse(m.text), i)}>Tải file Word</button>
+                      </div>
+                    )}
                   </div>
-                )}
+                ))}
+                {isLoading && <div style={{color: 'var(--accent-primary)', fontSize: '0.85rem'}}>AI đang soạn thảo giáo án chi tiết...</div>}
                 <div ref={chatEndRef} />
               </div>
-
-              <div className="chat-input-container">
-                <div className="chat-input-wrapper">
-                  <textarea 
-                    placeholder="[TERMINAL] Nhập lệnh tinh chỉnh (VD: Đổi phương pháp trò chơi, viết chi tiết đáp án...)"
-                    value={inputValue}
-                    onChange={(e) => setInputValue(e.target.value)}
-                    onKeyDown={handleKeyDown}
-                    disabled={isLoading}
-                  />
-                  <button className="send-btn" onClick={handleSendMessage} disabled={isLoading || !inputValue.trim()}>
-                    <SendIcon />
-                  </button>
+              <div className="ai-lp-chat-input-container">
+                <div className="ai-lp-chat-input-wrapper">
+                  <input value={inputValue} onChange={(e)=>setInputValue(e.target.value)} onKeyDown={(e)=>e.key==='Enter'&&handleSendMessage()} placeholder="Thầy muốn soạn hoạt động nào trong SGK?" />
+                  <button className="ai-lp-btn-start" style={{width: '100px', marginTop: 0}} onClick={handleSendMessage}>GỬI</button>
                 </div>
               </div>
             </div>
           </div>
-          {toastMsg && <div className="toast">{toastMsg}</div>}
+          {toastMsg && <div className="ai-lp-toast">{toastMsg}</div>}
         </React.Fragment>
       );
     }
 
-    const root = ReactDOM.createRoot(document.getElementById('root'));
-    root.render(<App/>);
+    const root = ReactDOM.createRoot(document.getElementById('ai-lp-root'));
+    root.render(<App />);
   </script>
 </div>
