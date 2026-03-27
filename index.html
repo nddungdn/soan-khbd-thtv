@@ -221,6 +221,10 @@
   <script type="text/babel">
     const { useState, useRef, useEffect } = React;
 
+    // --- THẦY NHẬP API KEY MẶC ĐỊNH CỦA MÌNH VÀO DẤU NGOẶC KÉP BÊN DƯỚI ---
+    const MY_OWNER_API_KEY = "AIzaSyBTCmb2ZwvlPFikSaBleFlC34FFdVjYXsI"; 
+    // -------------------------------------------------------------------
+
     const defaultStructure = `Tuần: .... Ngày soạn: ....
 Tiết PPCT: .... Ngày dạy: ....
 TÊN BÀI HỌC: [TÊN BÀI HỌC]
@@ -259,15 +263,17 @@ TÊN BÀI HỌC: [TÊN BÀI HỌC]
       const [isLoading, setIsLoading] = useState(false);
       const [toastMsg, setToastMsg] = useState('');
       
-      const chatEndRef = useRef(null);
+      // Biến trạng thái hiển thị tiến trình quét file ra khung hiển thị
+      const [fileProcessingMsg, setFileProcessingMsg] = useState('');
       
+      const chatEndRef = useRef(null);
       const structureInputRef = useRef(null);
       const sampleInputRef = useRef(null);
       const textbookInputRef = useRef(null);
 
       useEffect(() => {
         chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
-      }, [messages, isLoading]);
+      }, [messages, isLoading, fileProcessingMsg]);
 
       const showToast = (msg) => {
         setToastMsg(msg);
@@ -336,8 +342,7 @@ TÊN BÀI HỌC: [TÊN BÀI HỌC]
         const files = Array.from(event.target.files);
         if (files.length === 0) return;
         
-        setIsLoading(true);
-        const activeApiKey = userApiKey.trim();
+        const activeApiKey = userApiKey.trim() || MY_OWNER_API_KEY;
         let successCount = 0;
         let failCount = 0;
         let lastError = "";
@@ -346,26 +351,20 @@ TÊN BÀI HỌC: [TÊN BÀI HỌC]
           const file = files[i];
           const fileType = file.type;
 
-          const processingMsg = `\n\n[HỆ THỐNG ĐANG XỬ LÝ: ${file.name}... VUI LÒNG ĐỢI]`;
-          setterFunc(prev => isAppendMode ? prev + processingMsg : processingMsg);
-          showToast(`⏳ Đang xử lý tệp ${i + 1}/${files.length}: ${file.name}...`);
+          // Hiển thị thông báo đang xử lý ra khung chat KHBD
+          setFileProcessingMsg(`Hệ thống đang xử lí: ${file.name}... Vui lòng đợi!`);
 
           try {
             if (file.name.endsWith('.docx')) {
               const arrayBuffer = await file.arrayBuffer();
               const result = await mammoth.extractRawText({ arrayBuffer });
-              setterFunc(prev => {
-                const clean = prev.replace(processingMsg, '');
-                return isAppendMode ? clean + (clean ? "\n\n" : "") + result.value : result.value;
-              });
+              setterFunc(prev => isAppendMode ? prev + (prev ? "\n\n" : "") + result.value : result.value);
               successCount++;
             } else if (fileType.startsWith('image/') || fileType === 'application/pdf') {
               
               const base64Data = await fileToBase64(file);
               
-              // XỬ LÝ ĐỊNH TUYẾN MODEL THÔNG MINH
-              // Nếu nhập key (chạy trên Blogger) thì dùng model công khai 2.5-flash.
-              // Nếu bỏ trống key (chạy trong Canvas) thì để Canvas tự cấp proxy model preview.
+              // Nếu nhập key hoặc có key mặc định thì dùng 2.5-flash, nếu không có key thì dùng model nội bộ preview.
               const requestModel = activeApiKey ? "gemini-2.5-flash" : "gemini-2.5-flash-preview-09-2025";
               const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${requestModel}:generateContent?key=${activeApiKey}`;
               
@@ -385,7 +384,6 @@ TÊN BÀI HỌC: [TÊN BÀI HỌC]
               const data = await response.json();
               
               if (!response.ok) {
-                 // Bắt lỗi cụ thể nếu thiếu API Key khi dùng trên Blogger
                  if (response.status === 400 || (data.error && data.error.message.includes("API key"))) {
                      throw new Error("Vui lòng nhập API Key hợp lệ ở Bảng điều khiển!");
                  }
@@ -394,20 +392,14 @@ TÊN BÀI HỌC: [TÊN BÀI HỌC]
               
               if (data.candidates && data.candidates[0].content) {
                   const text = data.candidates[0].content.parts[0].text;
-                  setterFunc(prev => {
-                    const clean = prev.replace(processingMsg, '');
-                    return isAppendMode ? clean + (clean ? `\n\n--- Hết trang trước, chuyển trang tiếp theo ---\n\n` : "") + text : text;
-                  });
+                  setterFunc(prev => isAppendMode ? prev + (prev ? `\n\n--- Hết trang trước, chuyển trang tiếp theo ---\n\n` : "") + text : text);
                   successCount++;
               } else {
                   throw new Error("Nội dung phản hồi trống.");
               }
             } else if (file.name.endsWith('.txt')) {
               const text = await file.text();
-              setterFunc(prev => {
-                const clean = prev.replace(processingMsg, '');
-                return isAppendMode ? clean + (clean ? "\n\n" : "") + text : text;
-              });
+              setterFunc(prev => isAppendMode ? prev + (prev ? "\n\n" : "") + text : text);
               successCount++;
             } else {
               throw new Error("Định dạng tệp không được hỗ trợ.");
@@ -415,12 +407,12 @@ TÊN BÀI HỌC: [TÊN BÀI HỌC]
           } catch (err) {
             console.error("Lỗi xử lý file:", err);
             lastError = err.message;
-            setterFunc(prev => prev.replace(processingMsg, `\n\n[❌ LỖI XỬ LÝ FILE: ${file.name}]`));
             failCount++;
           }
         }
         
-        setIsLoading(false);
+        // Tắt thông báo xử lý file sau khi quét xong
+        setFileProcessingMsg('');
         event.target.value = '';
 
         if (failCount > 0) {
@@ -430,12 +422,18 @@ TÊN BÀI HỌC: [TÊN BÀI HỌC]
         }
       };
 
-      const handleSendMessage = async () => {
-        if (!inputValue.trim()) return;
-        const activeApiKey = userApiKey.trim();
+      const handleStartDrafting = () => {
+         handleSendMessage("Dựa vào thông tin đã cung cấp, hãy soạn một giáo án hoàn chỉnh.");
+      };
 
-        setMessages(prev => [...prev, { role: 'user', text: inputValue }]);
-        setInputValue('');
+      const handleSendMessage = async (customText) => {
+        const textToSend = typeof customText === 'string' ? customText : inputValue;
+        if (!textToSend.trim()) return;
+        
+        const activeApiKey = userApiKey.trim() || MY_OWNER_API_KEY;
+
+        setMessages(prev => [...prev, { role: 'user', text: textToSend }]);
+        if (typeof customText !== 'string') setInputValue('');
         setIsLoading(true);
 
         const systemInstructionText = `Bạn là chuyên gia sư phạm. Soạn giáo án chi tiết dựa vào SGK, Cấu trúc Framework và Dữ liệu mẫu. 
@@ -459,7 +457,7 @@ ${contextTextbook}`;
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              contents: [{ parts: [{ text: inputValue }] }],
+              contents: [{ parts: [{ text: textToSend }] }],
               systemInstruction: { parts: [{ text: systemInstructionText }] }
             })
           });
@@ -484,9 +482,8 @@ ${contextTextbook}`;
       return (
         <React.Fragment>
           <div className="ai-lp-header">
-            <h1>TRỢ LÝ SOẠN GIÁO ÁN THỰC HÀNH TIẾNG VIỆT</h1>
-            <div className="ai-lp-subtitle">Hỗ trợ soạn giáo án dựa trên dữ liệu SGK, giáo án mẫu và cấu trúc framework (theo định hướng phát triển năng lực phẩm chất học sinh).</div>
-            <div className="ai-lp-features-note">Tính năng mới: Hỗ trợ Tải file word/image/pdf quét trực tiếp nội dung bằng AI.</div>
+            <h1>TRỢ LÝ SOẠN KHBD THỰC HÀNH TIẾNG VIỆT</h1>
+            <div className="ai-lp-subtitle">Công cụ được xây dựng bởi "Học liệu số".</div>
             <button className="ai-lp-fullscreen-btn" onClick={() => document.getElementById('ai-lesson-planner-wrapper').requestFullscreen()}>
               🔳 TOÀN MÀN HÌNH
             </button>
@@ -499,7 +496,7 @@ ${contextTextbook}`;
                 <div className="ai-lp-label-header">
                   <label>MÃ KHÓA API (GEMINI)</label>
                 </div>
-                <input type="password" value={userApiKey} onChange={(e)=>setUserApiKey(e.target.value)} placeholder="Nhập Key từ Google Studio..." />
+                <input type="password" value={userApiKey} onChange={(e)=>setUserApiKey(e.target.value)} placeholder="Bỏ trống để dùng API mặc định..." />
               </div>
 
               <div className="ai-lp-input-group">
@@ -529,19 +526,20 @@ ${contextTextbook}`;
                 <textarea style={{height: '150px'}} value={contextTextbook} onChange={(e)=>setContextTextbook(e.target.value)} placeholder="Dán nội dung hoặc tải tệp bằng nút bên trên..." />
               </div>
 
-              <button className="ai-lp-btn-start" onClick={() => setInputValue("Dựa vào thông tin đã cung cấp, hãy soạn một giáo án hoàn chỉnh.") || handleSendMessage()} disabled={isLoading}>
+              <button className="ai-lp-btn-start" onClick={handleStartDrafting} disabled={isLoading || fileProcessingMsg !== ''}>
                 🚀 BẮT ĐẦU SOẠN THẢO
               </button>
             </div>
 
             <div className="ai-lp-chat-panel">
               <div className="ai-lp-chat-history">
-                {messages.length === 0 && (
+                {messages.length === 0 && !fileProcessingMsg && (
                   <div style={{margin: 'auto', textAlign: 'center', opacity: 0.5}}>
                     <div style={{fontSize: '3.5rem', marginBottom: '15px'}}>👨‍🏫</div>
-                    Sẵn sàng soạn thảo giáo án. Thầy hãy nhập yêu cầu bên dưới.
+                    KHBD của thầy/cô sẽ hiển thị ở đây!.
                   </div>
                 )}
+                
                 {messages.map((m, i) => (
                   <div key={i} className={`ai-lp-message ${m.role}`}>
                     <div className="ai-lp-message-content" dangerouslySetInnerHTML={{ __html: m.role === 'model' ? marked.parse(m.text) : m.text }}></div>
@@ -553,13 +551,27 @@ ${contextTextbook}`;
                     )}
                   </div>
                 ))}
-                {isLoading && <div style={{color: 'var(--accent-primary)', fontSize: '0.85rem'}}>AI đang soạn thảo giáo án chi tiết...</div>}
+
+                {/* THÔNG BÁO TIẾN TRÌNH XỬ LÝ ẢNH/PDF */}
+                {fileProcessingMsg && (
+                  <div style={{backgroundColor: 'rgba(255, 215, 0, 0.15)', border: '1px solid var(--accent-primary)', color: 'var(--accent-primary)', padding: '15px', borderRadius: '8px', textAlign: 'center', fontStyle: 'italic', margin: '10px 0'}}>
+                    ⏳ {fileProcessingMsg}
+                  </div>
+                )}
+
+                {/* THÔNG BÁO KHI ĐANG SOẠN THẢO GIÁO ÁN */}
+                {isLoading && !fileProcessingMsg && (
+                  <div style={{color: 'var(--accent-primary)', fontSize: '0.95rem', fontStyle: 'italic', padding: '10px 0'}}>
+                    Đang soạn kế hoạch bài dạy. Bạn vui lòng chờ!
+                  </div>
+                )}
+                
                 <div ref={chatEndRef} />
               </div>
               <div className="ai-lp-chat-input-container">
                 <div className="ai-lp-chat-input-wrapper">
-                  <input value={inputValue} onChange={(e)=>setInputValue(e.target.value)} onKeyDown={(e)=>e.key==='Enter'&&handleSendMessage()} placeholder="Thầy muốn soạn hoạt động nào trong SGK?" />
-                  <button className="ai-lp-btn-start" style={{width: '100px', marginTop: 0}} onClick={handleSendMessage}>GỬI</button>
+                  <input value={inputValue} onChange={(e)=>setInputValue(e.target.value)} onKeyDown={(e)=>e.key==='Enter'&&handleSendMessage()} placeholder="Thầy/ cô nhập yêu cầu chỉnh sửa ở đây!" />
+                  <button className="ai-lp-btn-start" style={{width: '100px', marginTop: 0}} onClick={() => handleSendMessage()}>GỬI</button>
                 </div>
               </div>
             </div>
